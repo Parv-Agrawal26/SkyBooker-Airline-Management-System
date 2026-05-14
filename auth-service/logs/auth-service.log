@@ -1,0 +1,4 @@
+2026-05-15T00:00:59.520+05:30  INFO 10072 --- [auth-service] [http-nio-8081-exec-4] c.s.auth.service.AuthServiceImpl         : Login attempt — email: staff@gmail.com
+2026-05-15T00:00:59.617+05:30  INFO 10072 --- [auth-service] [http-nio-8081-exec-4] c.s.auth.service.AuthServiceImpl         : Login successful — email: staff@gmail.com
+2026-05-15T00:02:19.745+05:30  INFO 10072 --- [auth-service] [http-nio-8081-exec-6] c.s.auth.service.AuthServiceImpl         : Login attempt — email: admin@gmail.com
+2026-05-15T00:02:19.826+05:30  INFO 10072 --- [auth-service] [http-nio-8081-exec-6] c.s.auth.service.AuthServiceImpl         : Login successful — email: admin@gmail.com
