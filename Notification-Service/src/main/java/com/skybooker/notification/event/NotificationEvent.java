@@ -1,9 +1,10 @@
 package com.skybooker.notification.event;
 
+import java.io.Serializable;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.io.Serializable;
 
 @Data
 @AllArgsConstructor
@@ -25,4 +26,5 @@ public class NotificationEvent implements Serializable {
     private String passengerName;
     private String seatNumber;
     private String ticketNumber;
+    private String otp;
 }

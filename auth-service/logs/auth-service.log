@@ -2,3 +2,120 @@
 2026-05-15T00:00:59.617+05:30  INFO 10072 --- [auth-service] [http-nio-8081-exec-4] c.s.auth.service.AuthServiceImpl         : Login successful — email: staff@gmail.com
 2026-05-15T00:02:19.745+05:30  INFO 10072 --- [auth-service] [http-nio-8081-exec-6] c.s.auth.service.AuthServiceImpl         : Login attempt — email: admin@gmail.com
 2026-05-15T00:02:19.826+05:30  INFO 10072 --- [auth-service] [http-nio-8081-exec-6] c.s.auth.service.AuthServiceImpl         : Login successful — email: admin@gmail.com
+2026-05-15T08:45:25.583+05:30  INFO 2568 --- [auth-service] [main] c.skybooker.auth.AuthServiceApplication  : Starting AuthServiceApplication using Java 25.0.2 with PID 2568 (C:\Users\agraw\Desktop\New folder\backend\SkyBooker\auth-service\target\classes started by agraw in C:\Users\agraw\Desktop\New folder\backend\SkyBooker\auth-service)
+2026-05-15T08:45:25.589+05:30  INFO 2568 --- [auth-service] [main] c.skybooker.auth.AuthServiceApplication  : No active profile set, falling back to 1 default profile: "default"
+2026-05-15T08:45:27.270+05:30  INFO 2568 --- [auth-service] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-05-15T08:45:27.442+05:30  INFO 2568 --- [auth-service] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 120 ms. Found 1 JPA repository interface.
+2026-05-15T08:45:28.961+05:30  INFO 2568 --- [auth-service] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8081 (http)
+2026-05-15T08:45:28.981+05:30  INFO 2568 --- [auth-service] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-05-15T08:45:28.983+05:30  INFO 2568 --- [auth-service] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.20]
+2026-05-15T08:45:29.088+05:30  INFO 2568 --- [auth-service] [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-05-15T08:45:29.088+05:30  INFO 2568 --- [auth-service] [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 3389 ms
+2026-05-15T08:45:29.328+05:30  INFO 2568 --- [auth-service] [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-05-15T08:45:29.448+05:30  INFO 2568 --- [auth-service] [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.4.4.Final
+2026-05-15T08:45:29.513+05:30  INFO 2568 --- [auth-service] [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-05-15T08:45:29.946+05:30  INFO 2568 --- [auth-service] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-05-15T08:45:30.010+05:30  INFO 2568 --- [auth-service] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-05-15T08:45:31.989+05:30  INFO 2568 --- [auth-service] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@344f9467
+2026-05-15T08:45:31.995+05:30  INFO 2568 --- [auth-service] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-05-15T08:45:32.079+05:30  WARN 2568 --- [auth-service] [main] org.hibernate.orm.deprecation            : HHH90000025: MySQL8Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-05-15T08:45:32.082+05:30  WARN 2568 --- [auth-service] [main] org.hibernate.orm.deprecation            : HHH90000026: MySQL8Dialect has been deprecated; use org.hibernate.dialect.MySQLDialect instead
+2026-05-15T08:45:33.992+05:30  INFO 2568 --- [auth-service] [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-05-15T08:45:34.155+05:30  INFO 2568 --- [auth-service] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-05-15T08:45:35.061+05:30  WARN 2568 --- [auth-service] [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-05-15T08:45:35.110+05:30  WARN 2568 --- [auth-service] [main] .s.s.UserDetailsServiceAutoConfiguration : 
+
+Using generated security password: 3e10b543-d6dd-4ed7-87f2-a5b445675d6b
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-05-15T08:45:35.405+05:30  INFO 2568 --- [auth-service] [main] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@1e6cd1c, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@1dab2cf5, org.springframework.security.web.context.SecurityContextHolderFilter@67748053, org.springframework.security.web.header.HeaderWriterFilter@46cb800b, org.springframework.security.web.authentication.logout.LogoutFilter@321302bc, com.skybooker.auth.security.JwtFilter@4c1d59cd, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@7fb8d720, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@21b792c2, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@19f9287a, org.springframework.security.web.access.ExceptionTranslationFilter@32eeef08, org.springframework.security.web.access.intercept.AuthorizationFilter@8929865]
+2026-05-15T08:45:35.814+05:30  INFO 2568 --- [auth-service] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8081 (http) with context path ''
+2026-05-15T08:45:35.832+05:30  INFO 2568 --- [auth-service] [main] c.skybooker.auth.AuthServiceApplication  : Started AuthServiceApplication in 11.216 seconds (process running for 12.068)
+2026-05-15T08:49:34.624+05:30  INFO 2568 --- [auth-service] [http-nio-8081-exec-3] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-05-15T08:49:34.625+05:30  INFO 2568 --- [auth-service] [http-nio-8081-exec-3] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-05-15T08:49:34.626+05:30  INFO 2568 --- [auth-service] [http-nio-8081-exec-3] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2026-05-15T08:49:34.743+05:30  INFO 2568 --- [auth-service] [http-nio-8081-exec-3] c.s.auth.service.AuthServiceImpl         : Register attempt — email: skybooker.support@gmail.com
+2026-05-15T08:49:35.003+05:30  INFO 2568 --- [auth-service] [http-nio-8081-exec-3] c.s.auth.service.AuthServiceImpl         : User registered — email: skybooker.support@gmail.com, role: PASSENGER
+2026-05-15T08:49:35.025+05:30  INFO 2568 --- [auth-service] [http-nio-8081-exec-3] o.s.a.r.c.CachingConnectionFactory       : Attempting to connect to: [localhost:5672]
+2026-05-15T08:49:35.077+05:30  INFO 2568 --- [auth-service] [http-nio-8081-exec-3] o.s.a.r.c.CachingConnectionFactory       : Created new connection: rabbitConnectionFactory#7528089c:0/SimpleConnection@3ce5b6ee [delegate=amqp://guest@127.0.0.1:5672/, localPort=51559]
+2026-05-15T08:49:47.044+05:30  INFO 2568 --- [auth-service] [http-nio-8081-exec-4] c.s.auth.service.AuthServiceImpl         : Login attempt — email: skybooker.support@gmail.com
+2026-05-15T08:49:47.172+05:30  INFO 2568 --- [auth-service] [http-nio-8081-exec-4] c.s.auth.service.AuthServiceImpl         : Login successful — email: skybooker.support@gmail.com
+2026-05-15T08:54:21.735+05:30  INFO 26324 --- [auth-service] [main] c.skybooker.auth.AuthServiceApplication  : Starting AuthServiceApplication using Java 25.0.2 with PID 26324 (C:\Users\agraw\Desktop\New folder\backend\SkyBooker\auth-service\target\classes started by agraw in C:\Users\agraw\Desktop\New folder\backend\SkyBooker\auth-service)
+2026-05-15T08:54:21.737+05:30  INFO 26324 --- [auth-service] [main] c.skybooker.auth.AuthServiceApplication  : No active profile set, falling back to 1 default profile: "default"
+2026-05-15T08:54:22.320+05:30  INFO 26324 --- [auth-service] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-05-15T08:54:22.364+05:30  INFO 26324 --- [auth-service] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 38 ms. Found 1 JPA repository interface.
+2026-05-15T08:54:22.857+05:30  INFO 26324 --- [auth-service] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8081 (http)
+2026-05-15T08:54:22.870+05:30  INFO 26324 --- [auth-service] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-05-15T08:54:22.870+05:30  INFO 26324 --- [auth-service] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.20]
+2026-05-15T08:54:22.944+05:30  INFO 26324 --- [auth-service] [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-05-15T08:54:22.945+05:30  INFO 26324 --- [auth-service] [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1170 ms
+2026-05-15T08:54:23.077+05:30  INFO 26324 --- [auth-service] [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-05-15T08:54:23.135+05:30  INFO 26324 --- [auth-service] [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.4.4.Final
+2026-05-15T08:54:23.169+05:30  INFO 26324 --- [auth-service] [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-05-15T08:54:23.402+05:30  INFO 26324 --- [auth-service] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-05-15T08:54:23.436+05:30  INFO 26324 --- [auth-service] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-05-15T08:54:24.094+05:30  INFO 26324 --- [auth-service] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@4fa8bebb
+2026-05-15T08:54:24.096+05:30  INFO 26324 --- [auth-service] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-05-15T08:54:24.141+05:30  WARN 26324 --- [auth-service] [main] org.hibernate.orm.deprecation            : HHH90000025: MySQL8Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-05-15T08:54:24.142+05:30  WARN 26324 --- [auth-service] [main] org.hibernate.orm.deprecation            : HHH90000026: MySQL8Dialect has been deprecated; use org.hibernate.dialect.MySQLDialect instead
+2026-05-15T08:54:24.963+05:30  INFO 26324 --- [auth-service] [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-05-15T08:54:25.007+05:30  INFO 26324 --- [auth-service] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-05-15T08:54:25.484+05:30  WARN 26324 --- [auth-service] [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-05-15T08:54:25.511+05:30  WARN 26324 --- [auth-service] [main] .s.s.UserDetailsServiceAutoConfiguration : 
+
+Using generated security password: 64664fb8-ebe8-4f71-9ebb-38a0145e39a3
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-05-15T08:54:25.730+05:30  INFO 26324 --- [auth-service] [main] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@3f908a10, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@153c69bc, org.springframework.security.web.context.SecurityContextHolderFilter@32f8a37b, org.springframework.security.web.header.HeaderWriterFilter@b97f195, org.springframework.security.web.authentication.logout.LogoutFilter@525c0f74, com.skybooker.auth.security.JwtFilter@20999517, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@1b4ade78, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@45fa7fb7, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@73cfafd8, org.springframework.security.web.access.ExceptionTranslationFilter@71e2ddd, org.springframework.security.web.access.intercept.AuthorizationFilter@321302bc]
+2026-05-15T08:54:26.071+05:30  INFO 26324 --- [auth-service] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8081 (http) with context path ''
+2026-05-15T08:54:26.080+05:30  INFO 26324 --- [auth-service] [main] c.skybooker.auth.AuthServiceApplication  : Started AuthServiceApplication in 4.669 seconds (process running for 5.002)
+2026-05-15T08:54:35.745+05:30  INFO 26324 --- [auth-service] [http-nio-8081-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-05-15T08:54:35.745+05:30  INFO 26324 --- [auth-service] [http-nio-8081-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-05-15T08:54:35.748+05:30  INFO 26324 --- [auth-service] [http-nio-8081-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 2 ms
+2026-05-15T08:54:35.922+05:30  INFO 26324 --- [auth-service] [http-nio-8081-exec-1] c.s.auth.service.AuthServiceImpl         : Forgot password request — email: skybooker.support@gmail.com
+2026-05-15T08:54:36.117+05:30  INFO 26324 --- [auth-service] [http-nio-8081-exec-1] o.s.a.r.c.CachingConnectionFactory       : Attempting to connect to: [localhost:5672]
+2026-05-15T08:54:36.164+05:30  INFO 26324 --- [auth-service] [http-nio-8081-exec-1] o.s.a.r.c.CachingConnectionFactory       : Created new connection: rabbitConnectionFactory#71db6703:0/SimpleConnection@60ed4bf1 [delegate=amqp://guest@127.0.0.1:5672/, localPort=65492]
+2026-05-15T08:55:10.598+05:30  INFO 26324 --- [auth-service] [http-nio-8081-exec-2] c.s.auth.service.AuthServiceImpl         : Reset password attempt — email: skybooker.support@gmail.com
+2026-05-15T08:55:35.033+05:30  INFO 26324 --- [auth-service] [http-nio-8081-exec-3] c.s.auth.service.AuthServiceImpl         : Login attempt — email: skybooker.support@gmail.com
+2026-05-15T08:55:39.445+05:30  INFO 26324 --- [auth-service] [http-nio-8081-exec-4] c.s.auth.service.AuthServiceImpl         : Login attempt — email: skybooker.support@gmail.com
+2026-05-15T08:55:39.550+05:30  INFO 26324 --- [auth-service] [http-nio-8081-exec-4] c.s.auth.service.AuthServiceImpl         : Login successful — email: skybooker.support@gmail.com
+2026-05-15T08:59:33.654+05:30  INFO 26324 --- [auth-service] [http-nio-8081-exec-6] c.s.auth.service.AuthServiceImpl         : Forgot password request — email: skybooker.support@gmail.com
+2026-05-15T09:01:21.745+05:30  INFO 15524 --- [auth-service] [main] c.skybooker.auth.AuthServiceApplication  : Starting AuthServiceApplication using Java 25.0.2 with PID 15524 (C:\Users\agraw\Desktop\New folder\backend\SkyBooker\auth-service\target\classes started by agraw in C:\Users\agraw\Desktop\New folder\backend\SkyBooker\auth-service)
+2026-05-15T09:01:21.747+05:30  INFO 15524 --- [auth-service] [main] c.skybooker.auth.AuthServiceApplication  : No active profile set, falling back to 1 default profile: "default"
+2026-05-15T09:01:22.407+05:30  INFO 15524 --- [auth-service] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-05-15T09:01:22.451+05:30  INFO 15524 --- [auth-service] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 37 ms. Found 1 JPA repository interface.
+2026-05-15T09:01:22.907+05:30  INFO 15524 --- [auth-service] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8081 (http)
+2026-05-15T09:01:22.917+05:30  INFO 15524 --- [auth-service] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-05-15T09:01:22.918+05:30  INFO 15524 --- [auth-service] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.20]
+2026-05-15T09:01:23.014+05:30  INFO 15524 --- [auth-service] [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-05-15T09:01:23.014+05:30  INFO 15524 --- [auth-service] [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1221 ms
+2026-05-15T09:01:23.138+05:30  INFO 15524 --- [auth-service] [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-05-15T09:01:23.181+05:30  INFO 15524 --- [auth-service] [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.4.4.Final
+2026-05-15T09:01:23.211+05:30  INFO 15524 --- [auth-service] [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-05-15T09:01:23.402+05:30  INFO 15524 --- [auth-service] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-05-15T09:01:23.430+05:30  INFO 15524 --- [auth-service] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-05-15T09:01:23.761+05:30  INFO 15524 --- [auth-service] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@4269aad7
+2026-05-15T09:01:23.763+05:30  INFO 15524 --- [auth-service] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-05-15T09:01:23.797+05:30  WARN 15524 --- [auth-service] [main] org.hibernate.orm.deprecation            : HHH90000025: MySQL8Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-05-15T09:01:23.798+05:30  WARN 15524 --- [auth-service] [main] org.hibernate.orm.deprecation            : HHH90000026: MySQL8Dialect has been deprecated; use org.hibernate.dialect.MySQLDialect instead
+2026-05-15T09:01:24.505+05:30  INFO 15524 --- [auth-service] [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-05-15T09:01:24.542+05:30  INFO 15524 --- [auth-service] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-05-15T09:01:24.974+05:30  WARN 15524 --- [auth-service] [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-05-15T09:01:24.997+05:30  WARN 15524 --- [auth-service] [main] .s.s.UserDetailsServiceAutoConfiguration : 
+
+Using generated security password: d309b3d6-ae11-44a5-8464-c7fc09e309cd
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-05-15T09:01:25.182+05:30  INFO 15524 --- [auth-service] [main] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@6aff157e, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@65fa1cd, org.springframework.security.web.context.SecurityContextHolderFilter@ab595e8, org.springframework.security.web.header.HeaderWriterFilter@21b792c2, org.springframework.security.web.authentication.logout.LogoutFilter@4b517357, com.skybooker.auth.security.JwtFilter@76cf841, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@623be2a0, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@3b44ed3c, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@106c73ed, org.springframework.security.web.access.ExceptionTranslationFilter@7da59f6e, org.springframework.security.web.access.intercept.AuthorizationFilter@4924ad09]
+2026-05-15T09:01:25.467+05:30  INFO 15524 --- [auth-service] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8081 (http) with context path ''
+2026-05-15T09:01:25.474+05:30  INFO 15524 --- [auth-service] [main] c.skybooker.auth.AuthServiceApplication  : Started AuthServiceApplication in 4.141 seconds (process running for 4.563)
+2026-05-15T09:01:34.689+05:30  INFO 15524 --- [auth-service] [http-nio-8081-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-05-15T09:01:34.690+05:30  INFO 15524 --- [auth-service] [http-nio-8081-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-05-15T09:01:34.692+05:30  INFO 15524 --- [auth-service] [http-nio-8081-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2026-05-15T09:01:34.809+05:30  INFO 15524 --- [auth-service] [http-nio-8081-exec-1] c.s.auth.service.AuthServiceImpl         : Verify reset OTP — email: skybooker.support@gmail.com
+2026-05-15T09:01:43.783+05:30  INFO 15524 --- [auth-service] [http-nio-8081-exec-2] c.s.auth.service.AuthServiceImpl         : Reset password attempt — email: skybooker.support@gmail.com
+2026-05-15T09:02:00.422+05:30  INFO 15524 --- [auth-service] [http-nio-8081-exec-3] c.s.auth.service.AuthServiceImpl         : Login attempt — email: skybooker.support@gmail.com
+2026-05-15T09:02:00.543+05:30  INFO 15524 --- [auth-service] [http-nio-8081-exec-3] c.s.auth.service.AuthServiceImpl         : Login successful — email: skybooker.support@gmail.com

@@ -1,15 +1,17 @@
 package com.skybooker.notification.service;
 
-import com.skybooker.notification.event.NotificationEvent;
-import jakarta.mail.internet.MimeMessage;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
+
+import com.skybooker.notification.event.NotificationEvent;
+
+import jakarta.mail.internet.MimeMessage;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
@@ -60,6 +62,13 @@ public class EmailService {
         ctx.setVariable("amount",        event.getAmount());
         ctx.setVariable("transactionId", event.getTransactionId());
         send(event.getToEmail(), "Refund Initiated — Booking #" + event.getBookingId(), "refund-confirmation", ctx);
+    }
+
+    public void sendPasswordResetOtpEmail(NotificationEvent event) {
+        Context ctx = new Context();
+        ctx.setVariable("userName", event.getUserName());
+        ctx.setVariable("otp", event.getOtp());
+        send(event.getToEmail(), "SkyBooker Password Reset Code", "password-reset-otp", ctx);
     }
 
     private void send(String to, String subject, String template, Context ctx) {

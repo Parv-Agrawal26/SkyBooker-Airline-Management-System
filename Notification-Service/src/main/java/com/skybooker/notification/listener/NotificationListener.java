@@ -1,12 +1,14 @@
 package com.skybooker.notification.listener;
 
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.stereotype.Component;
+
 import com.skybooker.notification.config.RabbitMQConfig;
 import com.skybooker.notification.event.NotificationEvent;
 import com.skybooker.notification.service.EmailService;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
@@ -25,6 +27,12 @@ public class NotificationListener {
     public void onBookingCreated(NotificationEvent event) {
         log.info("Received BOOKING_CREATED event — bookingId: {}", event.getBookingId());
         emailService.sendBookingCreatedEmail(event);
+    }
+
+    @RabbitListener(queues = RabbitMQConfig.PASSWORD_RESET_OTP_QUEUE)
+    public void onPasswordResetOtp(NotificationEvent event) {
+        log.info("Received PASSWORD_RESET_OTP event for: {}", event.getToEmail());
+        emailService.sendPasswordResetOtpEmail(event);
     }
 
     @RabbitListener(queues = RabbitMQConfig.PAYMENT_CONFIRMED_QUEUE)

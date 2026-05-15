@@ -1,25 +1,36 @@
 package com.skybooker.auth.service;
 
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
-import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.api.client.json.gson.GsonFactory;
-import com.skybooker.auth.config.RabbitMQConfig;
-import com.skybooker.auth.event.NotificationEvent;
-import com.skybooker.auth.dto.*;
-import com.skybooker.auth.entity.User;
-import com.skybooker.auth.repository.UserRepository;
-import com.skybooker.auth.security.JwtUtil;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.Optional;
+import java.util.Random;
+
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.Optional;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.gson.GsonFactory;
+import com.skybooker.auth.config.RabbitMQConfig;
+import com.skybooker.auth.dto.AuthResponse;
+import com.skybooker.auth.dto.ForgotPasswordRequest;
+import com.skybooker.auth.dto.GoogleAuthRequest;
+import com.skybooker.auth.dto.LoginRequest;
+import com.skybooker.auth.dto.ProfileResponse;
+import com.skybooker.auth.dto.RegisterRequest;
+import com.skybooker.auth.dto.ResetPasswordRequest;
+import com.skybooker.auth.dto.UpdateProfileRequest;
+import com.skybooker.auth.dto.VerifyResetOtpRequest;
+import com.skybooker.auth.entity.User;
+import com.skybooker.auth.event.NotificationEvent;
+import com.skybooker.auth.repository.UserRepository;
+import com.skybooker.auth.security.JwtUtil;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
@@ -126,6 +137,82 @@ public class AuthServiceImpl implements AuthService {
         String token = jwtUtil.generateToken(user.getEmail(), user.getRole());
         log.info("Login successful — email: {}", user.getEmail());
         return AuthResponse.token(token);
+    }
+
+    @Override
+    public AuthResponse forgotPassword(ForgotPasswordRequest request) {
+        log.info("Forgot password request — email: {}", request.getEmail());
+
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new RuntimeException("No account found with email: " + request.getEmail()));
+
+        if ("GOOGLE".equals(user.getProvider()))
+            throw new RuntimeException("Google login users cannot reset password here.");
+
+        String otp = generateOtp();
+        user.setResetOtp(otp);
+        user.setResetOtpExpiresAt(LocalDateTime.now().plusMinutes(10));
+        userRepository.save(user);
+
+        try {
+            NotificationEvent event = new NotificationEvent();
+            event.setType("PASSWORD_RESET_OTP");
+            event.setToEmail(user.getEmail());
+            event.setUserName(user.getFullName());
+            event.setOtp(otp);
+            rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE, RabbitMQConfig.PASSWORD_RESET_OTP_KEY, event);
+        } catch (Exception e) {
+            log.warn("Failed to publish PASSWORD_RESET_OTP event: {}", e.getMessage());
+        }
+
+        return AuthResponse.successMessage("OTP sent to your registered email address.");
+    }
+
+    @Override
+    public AuthResponse verifyResetOtp(VerifyResetOtpRequest request) {
+        log.info("Verify reset OTP — email: {}", request.getEmail());
+
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new RuntimeException("No account found with email: " + request.getEmail()));
+
+        if ("GOOGLE".equals(user.getProvider()))
+            throw new RuntimeException("Google login users cannot reset password here.");
+
+        if (user.getResetOtp() == null || !user.getResetOtp().equals(request.getOtp()))
+            throw new RuntimeException("Invalid OTP. Please check the code sent to your email.");
+
+        if (user.getResetOtpExpiresAt() == null || user.getResetOtpExpiresAt().isBefore(LocalDateTime.now()))
+            throw new RuntimeException("OTP expired. Please request a new code.");
+
+        return AuthResponse.successMessage("OTP verified. You can now enter your new password.");
+    }
+
+    @Override
+    public AuthResponse resetPassword(ResetPasswordRequest request) {
+        log.info("Reset password attempt — email: {}", request.getEmail());
+
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new RuntimeException("No account found with email: " + request.getEmail()));
+
+        if ("GOOGLE".equals(user.getProvider()))
+            throw new RuntimeException("Google login users cannot reset password here.");
+
+        if (user.getResetOtp() == null || !user.getResetOtp().equals(request.getOtp()))
+            throw new RuntimeException("Invalid OTP. Please check the code sent to your email.");
+
+        if (user.getResetOtpExpiresAt() == null || user.getResetOtpExpiresAt().isBefore(LocalDateTime.now()))
+            throw new RuntimeException("OTP expired. Please request a new code.");
+
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        user.setResetOtp(null);
+        user.setResetOtpExpiresAt(null);
+        userRepository.save(user);
+
+        return AuthResponse.successMessage("Password reset successful. You can now log in with your new password.");
+    }
+
+    private String generateOtp() {
+        return String.format("%06d", new Random().nextInt(900000) + 100000);
     }
 
     @Override

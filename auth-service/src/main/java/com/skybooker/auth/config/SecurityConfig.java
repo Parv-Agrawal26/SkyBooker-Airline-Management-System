@@ -1,7 +1,5 @@
 package com.skybooker.auth.config;
 
-import com.skybooker.auth.security.JwtFilter;
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -9,6 +7,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import com.skybooker.auth.security.JwtFilter;
+
+import lombok.RequiredArgsConstructor;
 
 @Configuration
 @RequiredArgsConstructor
@@ -28,7 +30,14 @@ public class SecurityConfig {
                                 "/v3/api-docs/**",
                                 "/v3/api-docs"
                         ).permitAll()
-                        .requestMatchers("/auth/register", "/auth/login", "/auth/google").permitAll()
+                        .requestMatchers(
+                                "/auth/register",
+                                "/auth/login",
+                                "/auth/google",
+                                "/auth/forgot-password",
+                                "/auth/verify-reset-otp",
+                                "/auth/reset-password"
+                        ).permitAll()
                         .requestMatchers("/auth/profile").authenticated()
                         .anyRequest().authenticated()
                 )
