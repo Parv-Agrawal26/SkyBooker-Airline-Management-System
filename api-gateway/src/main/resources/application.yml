@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: ${API_GATEWAY_PORT:8080}
 
 spring:
   application:
@@ -7,13 +7,11 @@ spring:
 
   cloud:
     gateway:
-
-      # CORS sirf yahan - frontend (3000) se gateway (8080) tak
       globalcors:
         cors-configurations:
           '[/**]':
             allowedOrigins:
-              - "http://localhost:3000"
+              - "${FRONTEND_URL:http://localhost:3000}"
             allowedMethods:
               - GET
               - POST
@@ -27,52 +25,42 @@ spring:
             allowCredentials: true
             maxAge: 3600
 
-      # Routes - gateway incoming request dekh ke sahi service pe bhejta hai
       routes:
-
-        # Auth Service (8081) - /auth/** wale requests
         - id: auth-service
-          uri: http://localhost:8081
+          uri: ${AUTH_SERVICE_URL:http://localhost:8081}
           predicates:
             - Path=/auth/**
 
-        # Flight Service (8082) - /flights/** wale requests
         - id: flight-service
-          uri: http://localhost:8082
+          uri: ${FLIGHT_SERVICE_URL:http://localhost:8082}
           predicates:
             - Path=/flights/**
 
-        # Booking Service (8083) - /bookings/** wale requests
         - id: booking-service
-          uri: http://localhost:8083
+          uri: ${BOOKING_SERVICE_URL:http://localhost:8083}
           predicates:
             - Path=/bookings/**
 
-        # Passenger Service (8084) - /passengers/** wale requests
         - id: passenger-service
-          uri: http://localhost:8084
+          uri: ${PASSENGER_SERVICE_URL:http://localhost:8084}
           predicates:
             - Path=/passengers/**
 
-        # Payment Service (8085) - /payments/** wale requests
         - id: payment-service
-          uri: http://localhost:8085
+          uri: ${PAYMENT_SERVICE_URL:http://localhost:8085}
           predicates:
             - Path=/payments/**
 
-        # Seat Service (8086) - /seats/** wale requests
         - id: seat-service
-          uri: http://localhost:8086
+          uri: ${SEAT_SERVICE_URL:http://localhost:8086}
           predicates:
             - Path=/seats/**
 
-        # Airline Service (8087) - /airlines/** aur /airports/** wale requests
         - id: airline-service
-          uri: http://localhost:8087
+          uri: ${AIRLINE_SERVICE_URL:http://localhost:8087}
           predicates:
             - Path=/airlines/**,/airports/**
 
-# Health check endpoint
 management:
   endpoints:
     web:
