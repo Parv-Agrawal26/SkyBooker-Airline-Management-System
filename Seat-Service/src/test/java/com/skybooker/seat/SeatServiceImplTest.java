@@ -198,17 +198,17 @@ class SeatServiceImplTest {
         assertEquals("AVAILABLE", res.getStatus());
     }
 
-    // Test 10: Confirmed seat directly release nahi ho sakti
+    // Test 10: Confirmed seat release ho jati hai (booking cancel flow)
     @Test
-    void releaseSeat_WhenSeatIsConfirmed_ShouldThrowException() {
+    void releaseSeat_WhenSeatIsConfirmed_ShouldReleaseSuccessfully() {
         Seat seat = banaoSeat("CONFIRMED");
 
         when(seatRepository.findByFlightIdAndSeatNumber(101L, "12A"))
                 .thenReturn(Optional.of(seat));
+        when(seatRepository.save(any(Seat.class))).thenAnswer(i -> i.getArgument(0));
 
-        RuntimeException ex = assertThrows(RuntimeException.class,
-                () -> seatServiceImpl.releaseSeat(101L, "12A"));
+        SeatResponse res = seatServiceImpl.releaseSeat(101L, "12A");
 
-        assertTrue(ex.getMessage().contains("Confirmed seat"));
+        assertEquals("AVAILABLE", res.getStatus());
     }
 }
