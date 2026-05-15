@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>Refund Initiated</title></head>
+<body style="font-family:Arial,sans-serif;background:#f4f4f4;padding:20px">
+  <div style="max-width:600px;margin:auto;background:#fff;border-radius:8px;padding:30px">
+    <h2 style="color:#e65100">Refund Initiated 💸</h2>
+    <p>Your refund for booking <strong>#<span th:text="${bookingId}"></span></strong> has been processed.</p>
+    <table style="width:100%;border-collapse:collapse;margin-top:16px">
+      <tr><td style="padding:8px;color:#555">Refund Amount</td><td style="padding:8px"><strong>&#8377;<span th:text="${amount}"></span></strong></td></tr>
+      <tr style="background:#f9f9f9"><td style="padding:8px;color:#555">Transaction ID</td><td style="padding:8px" th:text="${transactionId}"></td></tr>
+    </table>
+    <p style="margin-top:16px">The amount will be credited to your original payment method within <strong>5–7 working days</strong>.</p>
+    <p style="color:#888;font-size:12px">— The SkyBooker Team</p>
+  </div>
+</body>
+</html>
