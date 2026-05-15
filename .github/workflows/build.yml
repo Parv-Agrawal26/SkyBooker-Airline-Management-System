@@ -7,31 +7,9 @@ on:
     types: [opened, synchronize, reopened]
 
 jobs:
-  build:
-    name: Build and analyze (${{ matrix.service }})
+  build-and-analyze:
+    name: Build, Test and Analyze
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - service: auth-service
-            dir: auth-service
-          - service: flight-booking
-            dir: flight-booking
-          - service: api-gateway
-            dir: api-gateway
-          - service: flight-service
-            dir: Flight-Service
-          - service: airline-service
-            dir: Airline-Service
-          - service: notification-service
-            dir: Notification-Service
-          - service: passenger-service
-            dir: Passenger-Service
-          - service: payment-service
-            dir: Payment-Service
-          - service: seat-service
-            dir: Seat-Service
 
     steps:
       - name: Checkout
@@ -59,8 +37,16 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
 
-      - name: Build and analyze ${{ matrix.service }}
-        working-directory: ${{ matrix.dir }}
+      - name: Build and test all services
+        run: |
+          for dir in auth-service flight-booking Flight-Service Airline-Service Notification-Service Passenger-Service Payment-Service Seat-Service api-gateway; do
+            echo "=== Building $dir ==="
+            mvn -B verify -f $dir/pom.xml
+          done
+
+      - name: SonarCloud Analysis
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=Parv-Agrawal26_SkyBooker-Airline-Management-System
+        run: |
+          npx sonar-scanner \
+            -Dsonar.token=$SONAR_TOKEN
