@@ -1,8 +1,15 @@
-# Environment variables
+# Environment variables — NEVER commit these
 .env
+.env.*
+!.env.example
 
-# Maven
+# Maven build output
 **/target/
+
+# Logs
+**/logs/
+*.log
+*.log.*.gz
 
 # IDE
 .idea/

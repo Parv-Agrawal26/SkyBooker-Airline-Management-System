@@ -2,6 +2,7 @@ package com.skybooker.seat.security;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -9,8 +10,11 @@ import javax.crypto.SecretKey;
 @Component
 public class JwtUtil {
 
-    private final String SECRET = "my-super-secret-key-my-super-secret-key-12345";
-    private final SecretKey key = Keys.hmacShaKeyFor(SECRET.getBytes());
+    private final SecretKey key;
+
+    public JwtUtil(@Value("${jwt.secret}") String secret) {
+        this.key = Keys.hmacShaKeyFor(secret.getBytes());
+    }
 
     public boolean validateToken(String token) {
         try {
