@@ -12,7 +12,7 @@ class JwtUtilTest {
 
     @BeforeEach
     void setUp() {
-        jwtUtil = new JwtUtil();
+        jwtUtil = new JwtUtil("this-is-a-test-secret-key-that-is-long-enough-for-hs256-algorithm");
     }
 
     // Test 1: Token generate hona chahiye, null nahi aana chahiye
