@@ -222,4 +222,61 @@ class FlightServiceImplTest {
         assertEquals(7500.0, res.getPrice());
         assertEquals(100, res.getAvailableSeats());
     }
+
+    // Test 11: Seats restore ho jayein
+    @Test
+    void restoreSeats_ShouldIncreaseAvailableSeats() {
+        Flight flight = banaoFlight();
+        flight.setAvailableSeats(100);
+        flight.setTotalSeats(180);
+
+        when(flightRepository.findById(1L)).thenReturn(Optional.of(flight));
+        when(flightRepository.save(any(Flight.class))).thenReturn(flight);
+
+        String result = flightServiceImpl.restoreSeats(1L, 10);
+
+        assertEquals("Seats restored successfully", result);
+        assertEquals(110, flight.getAvailableSeats());
+    }
+
+    // Test 12: Restore totalSeats se zyada nahi ho sakta
+    @Test
+    void restoreSeats_ShouldNotExceedTotalSeats() {
+        Flight flight = banaoFlight();
+        flight.setAvailableSeats(175);
+        flight.setTotalSeats(180);
+
+        when(flightRepository.findById(1L)).thenReturn(Optional.of(flight));
+        when(flightRepository.save(any(Flight.class))).thenReturn(flight);
+
+        flightServiceImpl.restoreSeats(1L, 20); // 175 + 20 = 195 > 180, should cap at 180
+
+        assertEquals(180, flight.getAvailableSeats());
+    }
+
+    // Test 13: Flight status update ho jaye
+    @Test
+    void updateStatus_WithValidStatus_ShouldSucceed() {
+        Flight flight = banaoFlight();
+
+        when(flightRepository.findById(1L)).thenReturn(Optional.of(flight));
+        when(flightRepository.save(any(Flight.class))).thenAnswer(i -> {
+            Flight f = i.getArgument(0);
+            f.setStatus("DELAYED");
+            return f;
+        });
+
+        FlightResponse res = flightServiceImpl.updateStatus(1L, "DELAYED");
+
+        assertEquals("DELAYED", res.getStatus());
+    }
+
+    // Test 14: Invalid status se exception aaye
+    @Test
+    void updateStatus_WithInvalidStatus_ShouldThrowException() {
+        RuntimeException ex = assertThrows(RuntimeException.class,
+                () -> flightServiceImpl.updateStatus(1L, "UNKNOWN"));
+
+        assertTrue(ex.getMessage().contains("Invalid status"));
+    }
 }

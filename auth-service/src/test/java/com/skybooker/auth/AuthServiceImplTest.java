@@ -13,6 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -26,7 +27,9 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class AuthServiceImplTest {
 
-    // @Mock matlab yeh fake objects hain — real DB nahi chalega
+    @Mock
+    private RabbitTemplate rabbitTemplate;
+
     @Mock
     private UserRepository userRepository;
 
@@ -255,5 +258,238 @@ class AuthServiceImplTest {
                 () -> authServiceImpl.login(req));
 
         assertTrue(ex.getMessage().contains("Google Sign-In"));
+    }
+
+    // Test 11: Galat role se register karne pe exception aaye
+    @Test
+    void register_InvalidRole_ShouldThrowException() {
+        RegisterRequest req = banaoRegisterRequest();
+        req.setRole("SUPERUSER");
+
+        when(userRepository.existsByEmail(req.getEmail())).thenReturn(false);
+
+        RuntimeException ex = assertThrows(RuntimeException.class,
+                () -> authServiceImpl.register(req));
+
+        assertTrue(ex.getMessage().contains("Invalid role"));
+    }
+
+    // Test 12: Email na mile toh login pe exception aaye
+    @Test
+    void login_EmailNotFound_ShouldThrowException() {
+        LoginRequest req = new LoginRequest();
+        req.setEmail("notfound@gmail.com");
+        req.setPassword("Test@1234");
+
+        when(userRepository.findByEmail(req.getEmail())).thenReturn(Optional.empty());
+
+        RuntimeException ex = assertThrows(RuntimeException.class,
+                () -> authServiceImpl.login(req));
+
+        assertTrue(ex.getMessage().contains("No account found"));
+    }
+
+    // ---------------------------------------------------------------
+    // FORGOT PASSWORD TESTS
+    // ---------------------------------------------------------------
+
+    // Test 13: Forgot password — email na mile toh exception
+    @Test
+    void forgotPassword_EmailNotFound_ShouldThrowException() {
+        com.skybooker.auth.dto.ForgotPasswordRequest req = new com.skybooker.auth.dto.ForgotPasswordRequest();
+        req.setEmail("notfound@gmail.com");
+
+        when(userRepository.findByEmail(req.getEmail())).thenReturn(Optional.empty());
+
+        RuntimeException ex = assertThrows(RuntimeException.class,
+                () -> authServiceImpl.forgotPassword(req));
+
+        assertTrue(ex.getMessage().contains("No account found"));
+    }
+
+    // Test 14: Forgot password — Google user pe exception aaye
+    @Test
+    void forgotPassword_GoogleUser_ShouldThrowException() {
+        com.skybooker.auth.dto.ForgotPasswordRequest req = new com.skybooker.auth.dto.ForgotPasswordRequest();
+        req.setEmail("google@gmail.com");
+
+        User user = banaoUser("google@gmail.com", "PASSENGER", "GOOGLE", true);
+        when(userRepository.findByEmail(req.getEmail())).thenReturn(Optional.of(user));
+
+        RuntimeException ex = assertThrows(RuntimeException.class,
+                () -> authServiceImpl.forgotPassword(req));
+
+        assertTrue(ex.getMessage().contains("Google login users cannot reset password"));
+    }
+
+    // Test 15: Forgot password — LOCAL user ke liye OTP save ho aur success message aaye
+    @Test
+    void forgotPassword_LocalUser_ShouldSaveOtpAndReturnSuccess() {
+        com.skybooker.auth.dto.ForgotPasswordRequest req = new com.skybooker.auth.dto.ForgotPasswordRequest();
+        req.setEmail("rahul@gmail.com");
+
+        User user = banaoUser("rahul@gmail.com", "PASSENGER", "LOCAL", true);
+        when(userRepository.findByEmail(req.getEmail())).thenReturn(Optional.of(user));
+        when(userRepository.save(any(User.class))).thenAnswer(i -> i.getArgument(0));
+
+        AuthResponse res = authServiceImpl.forgotPassword(req);
+
+        assertTrue(res.getMessage().contains("OTP sent"));
+        verify(userRepository, times(1)).save(any(User.class));
+    }
+
+    // ---------------------------------------------------------------
+    // VERIFY RESET OTP TESTS
+    // ---------------------------------------------------------------
+
+    // Test 16: Sahi OTP verify ho jaye
+    @Test
+    void verifyResetOtp_WithCorrectOtp_ShouldSucceed() {
+        com.skybooker.auth.dto.VerifyResetOtpRequest req = new com.skybooker.auth.dto.VerifyResetOtpRequest();
+        req.setEmail("rahul@gmail.com");
+        req.setOtp("123456");
+
+        User user = banaoUser("rahul@gmail.com", "PASSENGER", "LOCAL", true);
+        user.setResetOtp("123456");
+        user.setResetOtpExpiresAt(java.time.LocalDateTime.now().plusMinutes(5));
+
+        when(userRepository.findByEmail(req.getEmail())).thenReturn(Optional.of(user));
+
+        AuthResponse res = authServiceImpl.verifyResetOtp(req);
+
+        assertTrue(res.getMessage().contains("OTP verified"));
+    }
+
+    // Test 17: Galat OTP pe exception aaye
+    @Test
+    void verifyResetOtp_WithWrongOtp_ShouldThrowException() {
+        com.skybooker.auth.dto.VerifyResetOtpRequest req = new com.skybooker.auth.dto.VerifyResetOtpRequest();
+        req.setEmail("rahul@gmail.com");
+        req.setOtp("000000");
+
+        User user = banaoUser("rahul@gmail.com", "PASSENGER", "LOCAL", true);
+        user.setResetOtp("123456");
+        user.setResetOtpExpiresAt(java.time.LocalDateTime.now().plusMinutes(5));
+
+        when(userRepository.findByEmail(req.getEmail())).thenReturn(Optional.of(user));
+
+        RuntimeException ex = assertThrows(RuntimeException.class,
+                () -> authServiceImpl.verifyResetOtp(req));
+
+        assertTrue(ex.getMessage().contains("Invalid OTP"));
+    }
+
+    // Test 18: Expired OTP pe exception aaye
+    @Test
+    void verifyResetOtp_WithExpiredOtp_ShouldThrowException() {
+        com.skybooker.auth.dto.VerifyResetOtpRequest req = new com.skybooker.auth.dto.VerifyResetOtpRequest();
+        req.setEmail("rahul@gmail.com");
+        req.setOtp("123456");
+
+        User user = banaoUser("rahul@gmail.com", "PASSENGER", "LOCAL", true);
+        user.setResetOtp("123456");
+        user.setResetOtpExpiresAt(java.time.LocalDateTime.now().minusMinutes(5)); // expired
+
+        when(userRepository.findByEmail(req.getEmail())).thenReturn(Optional.of(user));
+
+        RuntimeException ex = assertThrows(RuntimeException.class,
+                () -> authServiceImpl.verifyResetOtp(req));
+
+        assertTrue(ex.getMessage().contains("OTP expired"));
+    }
+
+    // ---------------------------------------------------------------
+    // RESET PASSWORD TESTS
+    // ---------------------------------------------------------------
+
+    // Test 19: Sahi OTP se password reset ho jaye
+    @Test
+    void resetPassword_WithCorrectOtp_ShouldSucceed() {
+        com.skybooker.auth.dto.ResetPasswordRequest req = new com.skybooker.auth.dto.ResetPasswordRequest();
+        req.setEmail("rahul@gmail.com");
+        req.setOtp("123456");
+        req.setNewPassword("NewPass@123");
+
+        User user = banaoUser("rahul@gmail.com", "PASSENGER", "LOCAL", true);
+        user.setResetOtp("123456");
+        user.setResetOtpExpiresAt(java.time.LocalDateTime.now().plusMinutes(5));
+
+        when(userRepository.findByEmail(req.getEmail())).thenReturn(Optional.of(user));
+        when(passwordEncoder.encode(anyString())).thenReturn("$2a$newencoded");
+        when(userRepository.save(any(User.class))).thenAnswer(i -> i.getArgument(0));
+
+        AuthResponse res = authServiceImpl.resetPassword(req);
+
+        assertTrue(res.getMessage().contains("Password reset successful"));
+        verify(userRepository, times(1)).save(any(User.class));
+    }
+
+    // Test 20: Reset password — OTP null ho toh exception aaye
+    @Test
+    void resetPassword_WithNullOtp_ShouldThrowException() {
+        com.skybooker.auth.dto.ResetPasswordRequest req = new com.skybooker.auth.dto.ResetPasswordRequest();
+        req.setEmail("rahul@gmail.com");
+        req.setOtp("123456");
+        req.setNewPassword("NewPass@123");
+
+        User user = banaoUser("rahul@gmail.com", "PASSENGER", "LOCAL", true);
+        user.setResetOtp(null); // OTP set nahi hai
+        user.setResetOtpExpiresAt(java.time.LocalDateTime.now().plusMinutes(5));
+
+        when(userRepository.findByEmail(req.getEmail())).thenReturn(Optional.of(user));
+
+        RuntimeException ex = assertThrows(RuntimeException.class,
+                () -> authServiceImpl.resetPassword(req));
+
+        assertTrue(ex.getMessage().contains("Invalid OTP"));
+    }
+
+    // ---------------------------------------------------------------
+    // PROFILE TESTS
+    // ---------------------------------------------------------------
+
+    // Test 21: Profile fetch ho jaye
+    @Test
+    void getProfile_WhenUserExists_ShouldReturnProfile() {
+        User user = banaoUser("rahul@gmail.com", "PASSENGER", "LOCAL", true);
+        when(userRepository.findByEmail("rahul@gmail.com")).thenReturn(Optional.of(user));
+
+        com.skybooker.auth.dto.ProfileResponse res = authServiceImpl.getProfile("rahul@gmail.com");
+
+        assertNotNull(res);
+        assertEquals("rahul@gmail.com", res.getEmail());
+        assertEquals("PASSENGER", res.getRole());
+    }
+
+    // Test 22: Profile update ho jaye
+    @Test
+    void updateProfile_ShouldUpdateFieldsAndReturnProfile() {
+        User user = banaoUser("rahul@gmail.com", "PASSENGER", "LOCAL", true);
+        when(userRepository.findByEmail("rahul@gmail.com")).thenReturn(Optional.of(user));
+        when(userRepository.save(any(User.class))).thenAnswer(i -> i.getArgument(0));
+
+        com.skybooker.auth.dto.UpdateProfileRequest req = new com.skybooker.auth.dto.UpdateProfileRequest();
+        req.setFullName("Rahul Updated");
+        req.setPhone("9000000000");
+
+        com.skybooker.auth.dto.ProfileResponse res = authServiceImpl.updateProfile("rahul@gmail.com", req);
+
+        assertEquals("Rahul Updated", res.getFullName());
+        assertEquals("9000000000", res.getPhone());
+    }
+
+    // Test 23: Staff bina key ke register na ho sake
+    @Test
+    void register_StaffWithoutSecretKey_ShouldThrowException() {
+        RegisterRequest req = banaoRegisterRequest();
+        req.setRole("AIRLINE_STAFF");
+        req.setStaffSecretKey(null);
+
+        when(userRepository.existsByEmail(req.getEmail())).thenReturn(false);
+
+        RuntimeException ex = assertThrows(RuntimeException.class,
+                () -> authServiceImpl.register(req));
+
+        assertTrue(ex.getMessage().contains("staff secret key"));
     }
 }

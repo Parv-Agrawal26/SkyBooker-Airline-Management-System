@@ -2,7 +2,6 @@ package com.skybooker.passenger;
 
 import com.skybooker.passenger.dto.PassengerRequest;
 import com.skybooker.passenger.dto.PassengerResponse;
-import com.skybooker.passenger.dto.SeatAssignRequest;
 import com.skybooker.passenger.entity.PassengerInfo;
 import com.skybooker.passenger.repository.PassengerRepository;
 import com.skybooker.passenger.service.PassengerServiceImpl;
@@ -11,7 +10,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
@@ -28,9 +26,6 @@ class PassengerServiceImplTest {
 
     @Mock
     private PassengerRepository passengerRepository;
-
-    @Mock
-    private RabbitTemplate rabbitTemplate;
 
     @Mock
     private RestTemplate restTemplate;
@@ -226,35 +221,28 @@ class PassengerServiceImplTest {
     /*
     // Test 11: Seat successfully assign ho
     @Test
-    void assignSeat_WhenSeatIsFree_ShouldSucceed() {
+    void getByTicketNumber_WhenExists_ShouldReturnPassenger() {
         PassengerInfo passenger = banaoPassenger();
-        SeatAssignRequest req = new SeatAssignRequest(1L, 50L, "12A", null);
 
-        when(passengerRepository.findById(1L)).thenReturn(Optional.of(passenger));
-        when(passengerRepository.findBySeatId(50L)).thenReturn(Optional.empty()); // seat free hai
-        when(passengerRepository.save(any(PassengerInfo.class))).thenAnswer(i -> i.getArgument(0));
+        when(passengerRepository.findByTicketNumber("TKT-ABCD1234"))
+                .thenReturn(Optional.of(passenger));
 
-        PassengerResponse res = passengerServiceImpl.assignSeat(req);
+        PassengerResponse res = passengerServiceImpl.getByTicketNumber("TKT-ABCD1234");
 
-        assertEquals("12A", res.getSeatNumber());
+        assertEquals("TKT-ABCD1234", res.getTicketNumber());
+        assertEquals("Rahul", res.getFirstName());
     }
 
-    // Test 12: Pehle se liya hua seat assign nahi ho sakta
+    // Test 12: Galat ticket number pe exception aaye
     @Test
-    void assignSeat_WhenSeatAlreadyTaken_ShouldThrowException() {
-        PassengerInfo passenger = banaoPassenger();
-        PassengerInfo anotherPassenger = banaoPassenger();
-        anotherPassenger.setPassengerId(2L);
-
-        SeatAssignRequest req = new SeatAssignRequest(1L, 50L, "12A", null);
-
-        when(passengerRepository.findById(1L)).thenReturn(Optional.of(passenger));
-        when(passengerRepository.findBySeatId(50L)).thenReturn(Optional.of(anotherPassenger));
+    void getByTicketNumber_WhenNotFound_ShouldThrowException() {
+        when(passengerRepository.findByTicketNumber("TKT-INVALID"))
+                .thenReturn(Optional.empty());
 
         RuntimeException ex = assertThrows(RuntimeException.class,
-                () -> passengerServiceImpl.assignSeat(req));
+                () -> passengerServiceImpl.getByTicketNumber("TKT-INVALID"));
 
-        assertTrue(ex.getMessage().contains("already assigned"));
+        assertTrue(ex.getMessage().contains("Ticket not found"));
     }
     */
 

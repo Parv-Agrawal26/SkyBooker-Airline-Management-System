@@ -10,6 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 
@@ -28,7 +29,9 @@ class BookingServiceImplTest {
     @Mock
     private BookingRepository bookingRepository;
 
-    // RestTemplate mock karo — flight-service HTTP call karta hai
+    @Mock
+    private RabbitTemplate rabbitTemplate;
+
     @Mock
     private RestTemplate restTemplate;
 
@@ -300,5 +303,41 @@ class BookingServiceImplTest {
 
         // Verify karo ki flightId 10 save hua
         verify(bookingRepository).save(argThat(b -> b.getFlightId().equals(10L)));
+    }
+
+    // ---------------------------------------------------------------
+    // CANCEL BOOKING TESTS
+    // ---------------------------------------------------------------
+
+    // Test 9: Booking na mile toh cancel pe exception aaye
+    @Test
+    void cancelBooking_WhenBookingNotFound_ShouldThrowException() {
+        when(bookingRepository.findById(999L)).thenReturn(Optional.empty());
+
+        RuntimeException ex = assertThrows(RuntimeException.class,
+                () -> bookingServiceImpl.cancelBooking(999L));
+
+        assertTrue(ex.getMessage().contains("Booking not found"));
+    }
+
+    // Test 10: Cancel booking — passenger fetch fail ho toh bhi booking delete ho jaye
+    @Test
+    void cancelBooking_WhenPassengerFetchFails_ShouldStillDeleteBooking() {
+        Booking booking = banaoBooking();
+        when(bookingRepository.findById(1L)).thenReturn(Optional.of(booking));
+
+        // passenger service call fail karo
+        when(restTemplate.exchange(
+                contains("/passengers/booking/"),
+                eq(HttpMethod.GET),
+                any(),
+                any(org.springframework.core.ParameterizedTypeReference.class)
+        )).thenThrow(new RuntimeException("passenger service down"));
+
+        // exception nahi aana chahiye — graceful degradation
+        assertDoesNotThrow(() -> bookingServiceImpl.cancelBooking(1L));
+
+        // booking delete zaroor honi chahiye
+        verify(bookingRepository, times(1)).delete(booking);
     }
 }

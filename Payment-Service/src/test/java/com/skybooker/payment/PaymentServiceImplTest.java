@@ -10,6 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,6 +22,9 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class PaymentServiceImplTest {
+
+    @Mock
+    private RabbitTemplate rabbitTemplate;
 
     @Mock
     private PaymentRepository paymentRepository;
@@ -297,5 +301,48 @@ class PaymentServiceImplTest {
 
         assertEquals(2, result.size());
         result.forEach(r -> assertEquals("PAID", r.getStatus()));
+    }
+
+    // ---------------------------------------------------------------
+    // REVENUE TESTS
+    // ---------------------------------------------------------------
+
+    // Test 16: PAID bookings ka total revenue sahi aaye
+    @Test
+    void getRevenueForBookings_ShouldSumOnlyPaidPayments() {
+        Payment p1 = banaoPayment("PAID");
+        p1.setAmount(3000.0);
+        Payment p2 = banaoPayment("PAID");
+        p2.setId(2L);
+        p2.setBookingId(102L);
+        p2.setAmount(2000.0);
+        Payment p3 = banaoPayment("REFUNDED"); // yeh count nahi hoga
+        p3.setId(3L);
+        p3.setBookingId(103L);
+        p3.setAmount(1000.0);
+
+        when(paymentRepository.findByBookingIdIn(List.of(101L, 102L, 103L)))
+                .thenReturn(List.of(p1, p2, p3));
+
+        double revenue = paymentServiceImpl.getRevenueForBookings(List.of(101L, 102L, 103L));
+
+        assertEquals(5000.0, revenue); // sirf PAID wale: 3000 + 2000
+    }
+
+    // Test 17: Empty list pe 0 return ho
+    @Test
+    void getRevenueForBookings_WithEmptyList_ShouldReturnZero() {
+        double revenue = paymentServiceImpl.getRevenueForBookings(List.of());
+
+        assertEquals(0.0, revenue);
+        verify(paymentRepository, never()).findByBookingIdIn(any());
+    }
+
+    // Test 18: Null list pe 0 return ho
+    @Test
+    void getRevenueForBookings_WithNullList_ShouldReturnZero() {
+        double revenue = paymentServiceImpl.getRevenueForBookings(null);
+
+        assertEquals(0.0, revenue);
     }
 }
