@@ -111,12 +111,6 @@
 			<artifactId>spring-boot-starter-amqp</artifactId>
 		</dependency>
 
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-core</artifactId>
-			<scope>test</scope>
-		</dependency>
-
 		<!-- Java 23 ke saath Mockito chalane ke liye ye version chahiye -->
 		<dependency>
 			<groupId>org.mockito</groupId>
