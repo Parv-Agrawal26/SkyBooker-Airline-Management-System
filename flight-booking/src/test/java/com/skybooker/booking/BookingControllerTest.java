@@ -83,7 +83,7 @@ class BookingControllerTest {
                 .thenThrow(new RuntimeException("Booking not found: 999"));
 
         mockMvc.perform(get("/bookings/999"))
-                .andExpect(status().is5xxServerError());
+                .andExpect(status().is4xxClientError());
     }
 
     @Test
