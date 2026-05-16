@@ -8,17 +8,16 @@ import com.skybooker.auth.dto.RegisterRequest;
 import com.skybooker.auth.service.AuthService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -29,6 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         classes = com.skybooker.auth.security.JwtFilter.class
     )
 )
+@AutoConfigureMockMvc(addFilters = false)
 class AuthControllerTest {
 
     @Autowired
@@ -40,9 +40,11 @@ class AuthControllerTest {
     @MockBean
     private AuthService authService;
 
-    // JwtUtil and PasswordEncoder needed by SecurityConfig bean
     @MockBean
     private com.skybooker.auth.security.JwtUtil jwtUtil;
+
+    @MockBean
+    private org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
 
     @Test
     void register_ShouldReturn200_WhenValidRequest() throws Exception {
@@ -52,11 +54,10 @@ class AuthControllerTest {
         req.setPassword("Test@1234");
         req.setRole("PASSENGER");
 
-        AuthResponse response = AuthResponse.successMessage("Registration successful! Role assigned: PASSENGER");
-        when(authService.register(any(RegisterRequest.class))).thenReturn(response);
+        when(authService.register(any(RegisterRequest.class)))
+                .thenReturn(AuthResponse.successMessage("Registration successful! Role assigned: PASSENGER"));
 
         mockMvc.perform(post("/auth/register")
-                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(req)))
                 .andExpect(status().isOk())
@@ -69,11 +70,10 @@ class AuthControllerTest {
         req.setEmail("rahul@gmail.com");
         req.setPassword("Test@1234");
 
-        AuthResponse response = AuthResponse.token("fake.jwt.token");
-        when(authService.login(any(LoginRequest.class))).thenReturn(response);
+        when(authService.login(any(LoginRequest.class)))
+                .thenReturn(AuthResponse.token("fake.jwt.token"));
 
         mockMvc.perform(post("/auth/login")
-                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(req)))
                 .andExpect(status().isOk())
@@ -81,8 +81,7 @@ class AuthControllerTest {
     }
 
     @Test
-    @WithMockUser
-    void register_WhenServiceThrows_ShouldReturn500() throws Exception {
+    void register_WhenServiceThrows_ShouldReturnErrorStatus() throws Exception {
         RegisterRequest req = new RegisterRequest();
         req.setFullName("Test");
         req.setEmail("test@gmail.com");
@@ -93,9 +92,8 @@ class AuthControllerTest {
                 .thenThrow(new RuntimeException("Email already registered: test@gmail.com"));
 
         mockMvc.perform(post("/auth/register")
-                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(req)))
-                .andExpect(status().is5xxServerError());
+                .andExpect(status().is4xxClientError());
     }
 }

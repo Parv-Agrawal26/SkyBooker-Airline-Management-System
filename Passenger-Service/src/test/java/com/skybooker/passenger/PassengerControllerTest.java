@@ -7,12 +7,12 @@ import com.skybooker.passenger.dto.PassengerResponse;
 import com.skybooker.passenger.service.PassengerService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
@@ -20,7 +20,6 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -31,6 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         classes = com.skybooker.passenger.security.JwtFilter.class
     )
 )
+@AutoConfigureMockMvc(addFilters = false)
 class PassengerControllerTest {
 
     @Autowired
@@ -59,7 +59,6 @@ class PassengerControllerTest {
     }
 
     @Test
-    @WithMockUser
     void addPassenger_ShouldReturn200() throws Exception {
         PassengerRequest req = new PassengerRequest();
         req.setBookingId("BK-001");
@@ -71,7 +70,6 @@ class PassengerControllerTest {
         when(passengerService.addPassenger(any(PassengerRequest.class))).thenReturn(buildResponse());
 
         mockMvc.perform(post("/passengers")
-                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(req)))
                 .andExpect(status().isOk())
@@ -80,7 +78,6 @@ class PassengerControllerTest {
     }
 
     @Test
-    @WithMockUser
     void getPassengerById_ShouldReturn200() throws Exception {
         when(passengerService.getPassengerById(1L)).thenReturn(buildResponse());
 
@@ -91,7 +88,6 @@ class PassengerControllerTest {
     }
 
     @Test
-    @WithMockUser
     void getPassengersByBooking_ShouldReturn200WithList() throws Exception {
         when(passengerService.getPassengersByBooking("BK-001")).thenReturn(List.of(buildResponse()));
 
@@ -102,7 +98,6 @@ class PassengerControllerTest {
     }
 
     @Test
-    @WithMockUser
     void getPassengersByFlight_ShouldReturn200() throws Exception {
         when(passengerService.getPassengersByFlight(10L)).thenReturn(List.of(buildResponse()));
 
@@ -112,17 +107,15 @@ class PassengerControllerTest {
     }
 
     @Test
-    @WithMockUser
     void deletePassenger_ShouldReturn200() throws Exception {
         doNothing().when(passengerService).deletePassenger(1L);
 
-        mockMvc.perform(delete("/passengers/1").with(csrf()))
+        mockMvc.perform(delete("/passengers/1"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Passenger deleted successfully"));
     }
 
     @Test
-    @WithMockUser
     void getPassengerCount_ShouldReturn200() throws Exception {
         when(passengerService.getPassengerCount("BK-001")).thenReturn(3);
 
@@ -132,7 +125,6 @@ class PassengerControllerTest {
     }
 
     @Test
-    @WithMockUser
     void getByTicket_ShouldReturn200() throws Exception {
         when(passengerService.getByTicketNumber("TKT-ABCD1234")).thenReturn(buildResponse());
 

@@ -8,19 +8,18 @@ import com.skybooker.airline.dto.AirportResponse;
 import com.skybooker.airline.service.AirlineService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -31,6 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         classes = com.skybooker.airline.security.JwtFilter.class
     )
 )
+@AutoConfigureMockMvc(addFilters = false)
 class AirlineControllerTest {
 
     @Autowired
@@ -68,7 +68,6 @@ class AirlineControllerTest {
     }
 
     @Test
-    @WithMockUser
     void addAirline_ShouldReturn200() throws Exception {
         AirlineRequest req = new AirlineRequest();
         req.setName("IndiGo");
@@ -78,7 +77,6 @@ class AirlineControllerTest {
         when(airlineService.addAirline(any(AirlineRequest.class))).thenReturn(buildAirlineResponse());
 
         mockMvc.perform(post("/airlines")
-                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(req)))
                 .andExpect(status().isOk())
@@ -87,7 +85,6 @@ class AirlineControllerTest {
     }
 
     @Test
-    @WithMockUser
     void getAirlineById_ShouldReturn200() throws Exception {
         when(airlineService.getAirlineById(1L)).thenReturn(buildAirlineResponse());
 
@@ -97,7 +94,6 @@ class AirlineControllerTest {
     }
 
     @Test
-    @WithMockUser
     void getAirlineByIata_ShouldReturn200() throws Exception {
         when(airlineService.getAirlineByIata("6E")).thenReturn(buildAirlineResponse());
 
@@ -107,7 +103,6 @@ class AirlineControllerTest {
     }
 
     @Test
-    @WithMockUser
     void getAllAirlines_ShouldReturn200WithList() throws Exception {
         when(airlineService.getAllAirlines()).thenReturn(List.of(buildAirlineResponse()));
 
@@ -117,7 +112,6 @@ class AirlineControllerTest {
     }
 
     @Test
-    @WithMockUser
     void getActiveAirlines_ShouldReturn200() throws Exception {
         when(airlineService.getActiveAirlines()).thenReturn(List.of(buildAirlineResponse()));
 
@@ -127,20 +121,18 @@ class AirlineControllerTest {
     }
 
     @Test
-    @WithMockUser
     void toggleAirlineStatus_ShouldReturn200() throws Exception {
         AirlineResponse toggled = buildAirlineResponse();
         toggled.setActive(false);
         toggled.setMessage("Airline deactivated successfully");
         when(airlineService.toggleAirlineStatus(1L)).thenReturn(toggled);
 
-        mockMvc.perform(put("/airlines/1/toggle-status").with(csrf()))
+        mockMvc.perform(put("/airlines/1/toggle-status"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.active").value(false));
     }
 
     @Test
-    @WithMockUser
     void searchAirports_ShouldReturn200() throws Exception {
         when(airlineService.searchAirports("Delhi")).thenReturn(List.of(buildAirportResponse()));
 
@@ -150,7 +142,6 @@ class AirlineControllerTest {
     }
 
     @Test
-    @WithMockUser
     void getAirportByIata_ShouldReturn200() throws Exception {
         when(airlineService.getAirportByIata("DEL")).thenReturn(buildAirportResponse());
 

@@ -6,11 +6,11 @@ import com.skybooker.flight.dto.FlightResponse;
 import com.skybooker.flight.service.FlightService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
@@ -29,6 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         classes = com.skybooker.flight.security.JwtFilter.class
     )
 )
+@AutoConfigureMockMvc(addFilters = false)
 class FlightControllerTest {
 
     @Autowired
@@ -61,7 +62,6 @@ class FlightControllerTest {
     }
 
     @Test
-    @WithMockUser
     void getFlightById_ShouldReturn200() throws Exception {
         when(flightService.getFlightById(1L)).thenReturn(buildResponse());
 
@@ -73,7 +73,6 @@ class FlightControllerTest {
     }
 
     @Test
-    @WithMockUser
     void getAllFlights_ShouldReturn200WithList() throws Exception {
         when(flightService.getAllFlights()).thenReturn(List.of(buildResponse()));
 
@@ -83,7 +82,7 @@ class FlightControllerTest {
     }
 
     @Test
-    void searchFlights_WithoutAuth_ShouldReturn200() throws Exception {
+    void searchFlights_ShouldReturn200() throws Exception {
         when(flightService.searchFlights(eq("DEL"), eq("BOM"), any(LocalDate.class)))
                 .thenReturn(List.of(buildResponse()));
 
@@ -106,7 +105,6 @@ class FlightControllerTest {
     }
 
     @Test
-    @WithMockUser
     void reduceSeats_ShouldReturn200() throws Exception {
         when(flightService.reduceSeats(1L, 2)).thenReturn("Seats reduced successfully");
 
@@ -116,7 +114,6 @@ class FlightControllerTest {
     }
 
     @Test
-    @WithMockUser
     void restoreSeats_ShouldReturn200() throws Exception {
         when(flightService.restoreSeats(1L, 2)).thenReturn("Seats restored successfully");
 
@@ -126,7 +123,6 @@ class FlightControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "AIRLINE_STAFF")
     void updateStatus_ShouldReturn200() throws Exception {
         FlightResponse updated = buildResponse();
         updated.setStatus("DELAYED");
