@@ -260,8 +260,6 @@ public class FlightServiceImpl implements FlightService {
     private final FlightRepository flightRepository;
     private final RestTemplate restTemplate;
 
-    private static final String SEAT_SERVICE_URL = "http://localhost:8086/seats";
-
     @org.springframework.beans.factory.annotation.Value("${jwt.secret}")
     private String jwtSecret;
 
