@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head><meta charset="UTF-8"><title>Web Check-in Confirmed</title></head>
 <body style="font-family:Arial,sans-serif;background:#f4f4f4;padding:20px">
   <div style="max-width:600px;margin:auto;background:#fff;border-radius:8px;padding:30px">
     <h2 style="color:#1a73e8">Web Check-in Confirmed 🛫</h2>
     <p>Hi <strong th:text="${passengerName}">Passenger</strong>, your check-in is complete!</p>
     <table style="width:100%;border-collapse:collapse;margin-top:16px">
+      <thead><tr><th colspan="2" style="text-align:left;padding:8px;background:#eee;">Details</th></tr></thead>
       <tr><td style="padding:8px;color:#555">Booking ID</td><td style="padding:8px" th:text="${bookingId}"></td></tr>
       <tr style="background:#f9f9f9"><td style="padding:8px;color:#555">Ticket Number</td><td style="padding:8px"><strong th:text="${ticketNumber}"></strong></td></tr>
       <tr><td style="padding:8px;color:#555">Seat Number</td><td style="padding:8px"><strong th:text="${seatNumber}"></strong></td></tr>

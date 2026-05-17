@@ -211,8 +211,10 @@ public class AuthServiceImpl implements AuthService {
         return AuthResponse.successMessage("Password reset successful. You can now log in with your new password.");
     }
 
+    private static final java.security.SecureRandom RANDOM = new java.security.SecureRandom();
+
     private String generateOtp() {
-        return String.format("%06d", new Random().nextInt(900000) + 100000);
+        return String.format("%06d", RANDOM.nextInt(900000) + 100000);
     }
 
     @Override

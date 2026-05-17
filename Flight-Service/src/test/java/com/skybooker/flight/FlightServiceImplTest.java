@@ -72,6 +72,70 @@ class FlightServiceImplTest {
     }
 
     // ---------------------------------------------------------------
+    // ADD FLIGHT TESTS
+    // ---------------------------------------------------------------
+
+    @Test
+    void addFlight_WithValidData_ShouldSaveAndGenerateSeats() {
+        FlightRequest req = banaoRequest();
+        Flight savedFlight = banaoFlight();
+        
+        org.springframework.test.util.ReflectionTestUtils.setField(flightServiceImpl, "jwtSecret", "my-secret-key-123456789012345678901234567890");
+        org.springframework.test.util.ReflectionTestUtils.setField(flightServiceImpl, "seatServiceUrl", "http://localhost:8086");
+        
+        when(flightRepository.save(any(Flight.class))).thenReturn(savedFlight);
+        when(restTemplate.postForObject(anyString(), any(), eq(Object.class))).thenReturn(null);
+
+        FlightResponse res = flightServiceImpl.addFlight(req);
+
+        assertNotNull(res);
+        assertEquals("6E-101", res.getFlightNumber());
+        verify(flightRepository, times(1)).save(any(Flight.class));
+        verify(restTemplate, atLeastOnce()).postForObject(anyString(), any(), eq(Object.class));
+    }
+
+    @Test
+    void addFlight_WithPastDepartureDate_ShouldThrowException() {
+        FlightRequest req = banaoRequest();
+        req.setDepartureDate(LocalDate.now().minusDays(1));
+        
+        RuntimeException ex = assertThrows(RuntimeException.class, () -> flightServiceImpl.addFlight(req));
+        assertTrue(ex.getMessage().contains("Departure date cannot be in the past"));
+    }
+
+    @Test
+    void addFlight_WithSameDayButPastTime_ShouldThrowException() {
+        FlightRequest req = banaoRequest();
+        req.setDepartureDate(LocalDate.now());
+        req.setDepartureTime(LocalDateTime.now().minusMinutes(10).toLocalTime().toString().substring(0,5));
+        
+        RuntimeException ex = assertThrows(RuntimeException.class, () -> flightServiceImpl.addFlight(req));
+        assertTrue(ex.getMessage().contains("Departure time has already passed for today"));
+    }
+
+    @Test
+    void addFlight_WithArrivalDateBeforeDepartureDate_ShouldThrowException() {
+        FlightRequest req = banaoRequest();
+        req.setArrivalDate(LocalDate.now().plusDays(2));
+        req.setDepartureDate(LocalDate.now().plusDays(5));
+        
+        RuntimeException ex = assertThrows(RuntimeException.class, () -> flightServiceImpl.addFlight(req));
+        assertTrue(ex.getMessage().contains("Arrival date cannot be before departure date"));
+    }
+
+    @Test
+    void addFlight_WithSameDayArrivalBeforeDepartureTime_ShouldThrowException() {
+        FlightRequest req = banaoRequest();
+        req.setDepartureDate(LocalDate.now().plusDays(5));
+        req.setArrivalDate(LocalDate.now().plusDays(5));
+        req.setDepartureTime("14:00");
+        req.setArrivalTime("10:00");
+        
+        RuntimeException ex = assertThrows(RuntimeException.class, () -> flightServiceImpl.addFlight(req));
+        assertTrue(ex.getMessage().contains("arrival time must be after departure time"));
+    }
+
+    // ---------------------------------------------------------------
     // GET FLIGHT BY ID TESTS
     // ---------------------------------------------------------------
 
